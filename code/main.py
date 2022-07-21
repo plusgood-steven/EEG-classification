@@ -105,12 +105,11 @@ class AddNoise:
 
 
 transforms_func = transforms.Compose([
-    AddNoise(0.5)
+    AddNoise(0.5),
+    transforms.RandomCrop((2, 750), padding=(20, 0, 20, 0),
+                          pad_if_needed=False, fill=0, padding_mode='constant')
 ])
 
-# ,
-#     transforms.RandomCrop((2, 750), padding=(20, 0, 20, 0),
-#                           pad_if_needed=False, fill=0, padding_mode='constant')
 class BCIDataset(Dataset):
     '''
     x: Features.
@@ -178,13 +177,13 @@ def trainer(train_loader, test_loader, model, config, device):
 
         # 計算每個epoch train loader accuracy
         train_accu, _ = predict_accuracy(
-            model, train_loader, criterion, device)
+            model, train_loader, device, criterion)
         train_accu_records.append(train_accu)
         writer.add_scalar('Train Accuracy', train_accu, step)
 
         # 計算每個epoch test loader accuracy
         test_accu, mean_test_loss = predict_accuracy(
-            model, test_loader, criterion, device)
+            model, test_loader, device, criterion)
         test_accu_records.append(test_accu)
         test_loss_records.append(mean_test_loss)
         writer.add_scalar('Test Accuracy', test_accu, step)
@@ -210,7 +209,7 @@ def trainer(train_loader, test_loader, model, config, device):
     return train_loss_records, train_accu_records, test_loss_records, test_accu_records
 
 
-def predict_accuracy(model, test_loader, criterion, device):
+def predict_accuracy(model, test_loader, device, criterion=nn.CrossEntropyLoss):
     model.eval()
     accI_count = 0
     total_count = 0
@@ -234,11 +233,11 @@ def train_all_model(config, train_loader, test_loader, device):
     activation_functions = {"ReLU": nn.ReLU,
                             "LeakyReLU": nn.LeakyReLU, "ELU": nn.ELU}
 
-    # 存的位置
+    # save data path
     config["model_dir_path"] = config["dir_path"] + "/B{batch_size}_LR{learning_rate:.1e}".format(
         batch_size=config["batch_size"], learning_rate=config["learning_rate"])
+
     if not os.path.isdir(config["model_dir_path"]):
-        # Create directory of saving models.
         os.makedirs(config["model_dir_path"])
 
     best_accu_file = open(
@@ -268,15 +267,14 @@ def train_all_model(config, train_loader, test_loader, device):
     best_accu_file.close()
 
 
-# %%
+#%%
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 config = {
     'n_epochs': 1000,     # Number of epochs.
     'batch_size': 128,
     'learning_rate': 1e-3,
-    # If model has not improved for this many consecutive epochs, stop training.
-    'early_stop': 400,
-    'dir_path': './result/AddNoise5e-1',  # model will be saved this dir.
+    'early_stop': 400,  # If model has not improved for this many consecutive epochs, stop training.
+    'dir_path': './result',  # model will be saved this dir.
     "activation_function": nn.ReLU
 }
 same_seed(123456)
@@ -296,32 +294,4 @@ test_loader = DataLoader(
 print("batch_size", config['batch_size'])
 train_all_model(config, train_loader, test_loader, device)
 
-# # %%
-# for reload model
-# device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-# config = {
-#     'n_epochs': 1000,     # Number of epochs.
-#     'batch_size': 1080,
-#     'learning_rate': 1e-3,
-#     # If model has not improved for this many consecutive epochs, stop training.
-#     'early_stop': 400,
-#     'save_path': './models/model.ckpt',  # model will be saved here.
-#     "activation_function": nn.ELU
-# }
-
-# x_train, y_train, x_test, y_test = read_bci_data()
-
-# train_dataset, test_dataset = BCIDataset(
-#     x_train, y_train), BCIDataset(x_test, y_test)
-
-# # Pytorch data loader loads pytorch dataset into batches.
-# train_loader = DataLoader(
-#     train_dataset, batch_size=config['batch_size'], shuffle=True, pin_memory=True)
-# test_loader = DataLoader(
-#     test_dataset, batch_size=config['batch_size'], shuffle=False, pin_memory=True)
-
-# model = EEGNet(nn.ReLU).to(device)
-# model.load_state_dict(torch.load("./models/B128_LR1.0e-03/EEGNet_ReLU.ckpt"))
-# print("accuracy:", predict_accuracy(model, test_loader, device))
 # %%
