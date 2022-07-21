@@ -1,0 +1,7 @@
+Batch_Size: 128 LR: 1.0e-03
+EEGNet_ReLU: Test Accuracy: 86.30%
+EEGNet_LeakyReLU: Test Accuracy: 87.78%
+EEGNet_ELU: Test Accuracy: 86.20%
+DeepConvNet_ReLU: Test Accuracy: 87.87%
+DeepConvNet_LeakyReLU: Test Accuracy: 87.69%
+DeepConvNet_ELU: Test Accuracy: 87.31%

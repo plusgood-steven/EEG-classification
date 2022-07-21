@@ -1,0 +1,7 @@
+Batch_Size: 128 LR: 5.0e-02
+EEGNet_ReLU: Train Accurancy: 99.26% Test Accurancy: 87.04%
+EEGNet_LeakyReLU: Train Accurancy: 99.81% Test Accurancy: 84.44%
+EEGNet_ELU: Train Accurancy: 98.61% Test Accurancy: 81.02%
+DeepConvNet_ReLU: Train Accurancy: 82.31% Test Accurancy: 81.20%
+DeepConvNet_LeakyReLU: Train Accurancy: 82.04% Test Accurancy: 80.46%
+DeepConvNet_ELU: Train Accurancy: 89.72% Test Accurancy: 81.94%

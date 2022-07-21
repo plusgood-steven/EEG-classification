@@ -1,0 +1,2 @@
+Batch_Size: 128 LR: 1.0e-03
+EEGNet_ReLU: 0.8638888597488403

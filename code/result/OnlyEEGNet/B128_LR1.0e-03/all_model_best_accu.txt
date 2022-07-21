@@ -1,0 +1,4 @@
+Batch_Size: 128 LR: 1.0e-03
+EEGNet_ReLU: Test Accuracy: 88.80%
+EEGNet_LeakyReLU: Test Accuracy: 88.33%
+EEGNet_ELU: Test Accuracy: 87.13%
